@@ -91,8 +91,8 @@ class NotesAdapter(private val context : Context, val listener: NotesClickListen
 
     inner class NoteViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val notesLayout = itemView.findViewById<CardView>(R.id.cardLayout)
-        val title = itemView.findViewById<TextView>(R.id.etTitle)
-        val content = itemView.findViewById<TextView>(R.id.etNote)
+        val title = itemView.findViewById<TextView>(R.id.tvTitle)
+        val content = itemView.findViewById<TextView>(R.id.tvNote)
         val date = itemView.findViewById<TextView>(R.id.tvDate)
     }
 
