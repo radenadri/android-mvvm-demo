@@ -17,7 +17,12 @@ import com.radenadri.notes.database.NoteDatabase
 import com.radenadri.notes.databinding.ActivityMainBinding
 import com.radenadri.notes.models.Note
 import com.radenadri.notes.models.NoteViewModel
+import com.radenadri.notes.util.Logger
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
+import javax.inject.Named
 
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity(), NotesAdapter.NotesClickListener, PopupMenu.OnMenuItemClickListener {
 
     private lateinit var binding: ActivityMainBinding
@@ -25,6 +30,10 @@ class MainActivity : AppCompatActivity(), NotesAdapter.NotesClickListener, Popup
     lateinit var viewModel: NoteViewModel
     lateinit var adapter: NotesAdapter
     lateinit var selectedNote: Note
+
+    @Inject
+    @Named("Logger")
+    lateinit var logger: Logger
 
     private val updateNote = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
         if (it.resultCode == Activity.RESULT_OK) {
@@ -40,6 +49,9 @@ class MainActivity : AppCompatActivity(), NotesAdapter.NotesClickListener, Popup
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        // Injecting Logger
+        logger.log("Hello from MainActivity")
 
         // Initialize the UI
         initUI()
