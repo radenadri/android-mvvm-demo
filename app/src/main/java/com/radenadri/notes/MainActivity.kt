@@ -20,6 +20,8 @@ import com.radenadri.notes.models.Note
 import com.radenadri.notes.models.NoteViewModel
 import com.radenadri.notes.util.Logger
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import retrofit2.Retrofit
@@ -64,8 +66,8 @@ class MainActivity : AppCompatActivity(), NotesAdapter.NotesClickListener, Popup
         // Injecting Retrofit
         val quotesApi = retrofit.create(QuotesApi::class.java)
 
-        // launching a new coroutine
-        GlobalScope.launch {
+        // Create a coroutine
+        CoroutineScope(Dispatchers.IO).launch {
             val result = quotesApi.getQuotes()
             if (result != null)
                 // Checking the results
