@@ -15,10 +15,14 @@ import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.radenadri.notes.adapter.NotesAdapter
 import com.radenadri.notes.database.NoteDatabase
 import com.radenadri.notes.databinding.ActivityMainBinding
+import com.radenadri.notes.interfaces.QuotesApi
 import com.radenadri.notes.models.Note
 import com.radenadri.notes.models.NoteViewModel
 import com.radenadri.notes.util.Logger
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import retrofit2.Retrofit
 import javax.inject.Inject
 import javax.inject.Named
 
@@ -34,6 +38,10 @@ class MainActivity : AppCompatActivity(), NotesAdapter.NotesClickListener, Popup
     @Inject
     @Named("Logger")
     lateinit var logger: Logger
+
+    @Inject
+    @Named("Retrofit")
+    lateinit var retrofit: Retrofit
 
     private val updateNote = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
         if (it.resultCode == Activity.RESULT_OK) {
@@ -52,6 +60,17 @@ class MainActivity : AppCompatActivity(), NotesAdapter.NotesClickListener, Popup
 
         // Injecting Logger
         logger.log("Hello from MainActivity")
+
+        // Injecting Retrofit
+        val quotesApi = retrofit.create(QuotesApi::class.java)
+
+        // launching a new coroutine
+        GlobalScope.launch {
+            val result = quotesApi.getQuotes()
+            if (result != null)
+                // Checking the results
+                logger.log(result.body().toString())
+        }
 
         // Initialize the UI
         initUI()
