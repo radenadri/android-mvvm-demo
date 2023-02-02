@@ -1,13 +1,16 @@
 package com.radenadri.notes
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.Menu
 import android.view.MenuItem
 import android.widget.LinearLayout
 import android.widget.SearchView
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.appcompat.widget.PopupMenu
@@ -108,6 +111,18 @@ class MainActivity : AppCompatActivity(), NotesAdapter.NotesClickListener, Popup
         }
 
         database = NoteDatabase.getDatabase(this)
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.settings_menu, menu)
+
+        menu?.findItem(R.id.btn_settings)?.setOnMenuItemClickListener {
+            val intent = Intent(this, SettingsActivity::class.java)
+            startActivity(intent)
+            true
+        }
+
+        return true
     }
 
     private fun initUI() {
