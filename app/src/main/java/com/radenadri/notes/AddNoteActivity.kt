@@ -2,6 +2,7 @@ package com.radenadri.notes
 
 import android.app.Activity
 import android.content.Intent
+import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
@@ -25,7 +26,12 @@ class AddNoteActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         try {
-            oldNote = intent.getSerializableExtra("current_note") as Note
+            // oldNote = intent.getSerializableExtra("current_note") as Note
+            oldNote = if (Build.VERSION.SDK_INT >= 33) {
+                intent.getParcelableExtra("current_note", Note::class.java) as Note
+            } else {
+                intent.getParcelableExtra<Note>("current_note") as Note
+            }
             binding.etTitle.setText(oldNote.title)
             binding.etNote.setText(oldNote.content)
             isUpdate = true

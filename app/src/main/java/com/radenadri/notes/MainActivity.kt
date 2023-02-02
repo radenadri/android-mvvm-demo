@@ -2,12 +2,14 @@ package com.radenadri.notes
 
 import android.app.Activity
 import android.content.Intent
+import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.MenuItem
 import android.widget.LinearLayout
 import android.widget.SearchView
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import androidx.appcompat.widget.PopupMenu
 import androidx.cardview.widget.CardView
 import androidx.lifecycle.ViewModelProvider
@@ -46,12 +48,32 @@ class MainActivity : AppCompatActivity(), NotesAdapter.NotesClickListener, Popup
 
     private val updateNote = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
         if (it.resultCode == Activity.RESULT_OK) {
-            val note = it.data?.getSerializableExtra("note") as? Note
+            // val note = it.data?.getSerializableExtra("note") as? Note
+            val note = if (Build.VERSION.SDK_INT >= 33) {
+                it.data?.getParcelableExtra("note", Note::class.java)
+            } else {
+                it.data?.getParcelableExtra<Note>("note")
+            }
             if (note != null) {
                 viewModel.updateNote(note)
             }
         }
     }
+
+    val getContent = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            if (it.resultCode == Activity.RESULT_OK) {
+                // val note = it.data?.getSerializableExtra("note") as? Note
+                val note = if (Build.VERSION.SDK_INT >= 33) {
+                    it.data?.getParcelableExtra("note", Note::class.java)
+                } else {
+                    it.data?.getParcelableExtra<Note>("note")
+                }
+
+                if (note != null) {
+                    viewModel.insertNote(note)
+                }
+            }
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -68,9 +90,7 @@ class MainActivity : AppCompatActivity(), NotesAdapter.NotesClickListener, Popup
         // Create a coroutine
         CoroutineScope(Dispatchers.IO).launch {
             val result = quotesApi.getQuotes()
-            if (result != null)
-                // Checking the results
-                logger.log(result.body().toString())
+            logger.log(result.body().toString())
         }
 
         // Initialize the UI
@@ -98,15 +118,6 @@ class MainActivity : AppCompatActivity(), NotesAdapter.NotesClickListener, Popup
         )
         adapter = NotesAdapter(this, this)
         binding.recyclerView.adapter = adapter
-
-        val getContent = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-            if (it.resultCode == Activity.RESULT_OK) {
-                val note = it.data?.getSerializableExtra("note") as? Note
-                if (note != null) {
-                    viewModel.insertNote(note)
-                }
-            }
-        }
 
         binding.fbAddNote.setOnClickListener {
             val intent = Intent(this, AddNoteActivity::class.java)

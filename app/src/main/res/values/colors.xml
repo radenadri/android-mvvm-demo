@@ -15,4 +15,7 @@
     <color name="NoteColor4">#D9D55B</color>
     <color name="NoteColor5">#318BD1</color>
     <color name="NoteColor6">#D34500</color>
+
+    <color name="toolbarColor">@color/white</color>
+    <color name="toolbarTextColor">@color/black</color>
 </resources>
