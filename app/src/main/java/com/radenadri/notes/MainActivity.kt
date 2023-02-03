@@ -1,7 +1,6 @@
 package com.radenadri.notes
 
 import android.app.Activity
-import android.content.Context
 import android.content.Intent
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
@@ -10,9 +9,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.widget.LinearLayout
 import android.widget.SearchView
-import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.annotation.RequiresApi
 import androidx.appcompat.widget.PopupMenu
 import androidx.cardview.widget.CardView
 import androidx.lifecycle.ViewModelProvider
@@ -20,17 +17,9 @@ import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.radenadri.notes.adapter.NotesAdapter
 import com.radenadri.notes.database.NoteDatabase
 import com.radenadri.notes.databinding.ActivityMainBinding
-import com.radenadri.notes.interfaces.QuotesApi
 import com.radenadri.notes.models.Note
 import com.radenadri.notes.models.NoteViewModel
-import com.radenadri.notes.util.Logger
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import retrofit2.Retrofit
-import javax.inject.Inject
-import javax.inject.Named
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity(), NotesAdapter.NotesClickListener, PopupMenu.OnMenuItemClickListener {
@@ -40,14 +29,6 @@ class MainActivity : AppCompatActivity(), NotesAdapter.NotesClickListener, Popup
     lateinit var viewModel: NoteViewModel
     lateinit var adapter: NotesAdapter
     lateinit var selectedNote: Note
-
-    @Inject
-    @Named("Logger")
-    lateinit var logger: Logger
-
-    @Inject
-    @Named("Retrofit")
-    lateinit var retrofit: Retrofit
 
     private val updateNote = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
         if (it.resultCode == Activity.RESULT_OK) {
@@ -83,18 +64,6 @@ class MainActivity : AppCompatActivity(), NotesAdapter.NotesClickListener, Popup
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-        // Injecting Logger
-        logger.log("Hello from MainActivity")
-
-        // Injecting Retrofit
-        val quotesApi = retrofit.create(QuotesApi::class.java)
-
-        // Create a coroutine
-        CoroutineScope(Dispatchers.IO).launch {
-            val result = quotesApi.getQuotes()
-            logger.log(result.body().toString())
-        }
 
         // Initialize the UI
         initUI()
