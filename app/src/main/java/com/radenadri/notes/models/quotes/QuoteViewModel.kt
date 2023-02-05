@@ -13,7 +13,7 @@ import retrofit2.Response
 class QuoteViewModel(private val retrofitService: QuoteRepository) : ViewModel() {
 
     // Quotes
-    private val _quotes = MutableLiveData<QuoteList?>()
+    private var _quotes = MutableLiveData<QuoteList?>()
     val quotes: LiveData<QuoteList?>
     get() = _quotes
 
@@ -27,11 +27,31 @@ class QuoteViewModel(private val retrofitService: QuoteRepository) : ViewModel()
     val message : LiveData<String>
     get() = _message
 
-    fun getQuotes() {
+    fun getQuotes(page: Int = 1) {
         viewModelScope.launch(Dispatchers.IO) {
-            when (val response = retrofitService.getQuotes()) {
+            when (val response = retrofitService.getQuotes(page)) {
                 is NetworkResponse.Success -> {
-                    _quotes.postValue(response.body)
+                    if (response.body.results.size == 0) {
+                        _message.postValue("No more quotes")
+                        return@launch
+                    }
+
+                    // Add new quotes to old quotes
+                    var currentQuotes = _quotes.value
+
+                    // If currentQuotes is null, set currentQuotes to response.body
+                    // Else, set currentQuotes to currentQuotes + response.body
+                    if (currentQuotes == null) {
+                        currentQuotes = response.body
+                    } else {
+                        currentQuotes = currentQuotes.copy(
+                            results = currentQuotes.results + response.body.results
+                        )
+                    }
+
+                    // Set _quotes to currentQuotes
+                    _quotes.postValue(currentQuotes)
+
                 }
                 is NetworkResponse.ServerError -> {
                     _message.postValue("Server Error")

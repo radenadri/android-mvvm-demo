@@ -31,7 +31,7 @@ class SettingsActivity : AppCompatActivity() {
     private lateinit var viewModel: QuoteViewModel
     private lateinit var adapter: QuotesAdapter
 
-    private var page = 1
+    private var page: Int = 102
 
     @Inject
     @Named("Logger")
@@ -74,7 +74,7 @@ class SettingsActivity : AppCompatActivity() {
         // Observe quotes
         viewModel.quotes.observe(this@SettingsActivity) {
             if (it != null) {
-                it.results?.let { quotes ->
+                it.results.let { quotes ->
                     adapter.setQuotes(quotes)
                     binding.rvSpinner.visibility = View.GONE
                 }
@@ -102,23 +102,21 @@ class SettingsActivity : AppCompatActivity() {
                 if (!recyclerView.canScrollVertically(1)) {
                     logger.log("End of recycler view")
 
+                    page++
+
                     // Get quotes
                      CoroutineScope(Dispatchers.Main).launch {
-                         // viewModel.getQuotes(page)
-                         // disable loading after 3 seconds
-                         delay(3000)
+                         viewModel.getQuotes(page)
                          viewModel.hideLoading()
                      }
                     viewModel.showLoading()
 
-                    // Increment page
-                    page++
                 }
             }
         })
 
         // Get quotes
-        viewModel.getQuotes()
+        viewModel.getQuotes(page)
 
         // Add back button
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
