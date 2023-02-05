@@ -1,5 +1,6 @@
 package com.radenadri.notes.di.module
 
+import com.haroldadmin.cnradapter.NetworkResponseAdapterFactory
 import com.radenadri.notes.util.BASE_URL
 import com.radenadri.notes.util.Logger
 import dagger.Module
@@ -25,6 +26,7 @@ class AppModule {
     fun provideRetrofit(): Retrofit {
         return Retrofit.Builder()
             .baseUrl(BASE_URL)
+            .addCallAdapterFactory(NetworkResponseAdapterFactory())
             .addConverterFactory(GsonConverterFactory.create())
             .build()
     }

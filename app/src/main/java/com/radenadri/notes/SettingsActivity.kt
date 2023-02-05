@@ -3,6 +3,7 @@ package com.radenadri.notes
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
+import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -62,11 +63,21 @@ class SettingsActivity : AppCompatActivity() {
             QuoteViewModelFactory(QuoteRepository(quotesApi))
         ).get(QuoteViewModel::class.java)
 
+        // Observe message
+        viewModel.message.observe(this@SettingsActivity) {
+            if (it != null) {
+                binding.rvSpinner.visibility = View.GONE
+                Toast.makeText(this@SettingsActivity, it, Toast.LENGTH_SHORT).show()
+            }
+        }
+
         // Observe quotes
         viewModel.quotes.observe(this@SettingsActivity) {
-            it.body()?.results?.let { quotes ->
-                adapter.setQuotes(quotes)
-                binding.rvSpinner.visibility = View.GONE
+            if (it != null) {
+                it.results?.let { quotes ->
+                    adapter.setQuotes(quotes)
+                    binding.rvSpinner.visibility = View.GONE
+                }
             }
         }
 

@@ -90,6 +90,9 @@ dependencies {
 
     // SwipeRefreshLayout
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0"
+
+    // NetworkResponseAdapter
+    implementation "com.github.haroldadmin:NetworkResponseAdapter:5.0.0"
 }
 
 // Allow references to generated code
