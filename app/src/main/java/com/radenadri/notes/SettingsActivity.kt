@@ -31,7 +31,7 @@ class SettingsActivity : AppCompatActivity() {
     private lateinit var viewModel: QuoteViewModel
     private lateinit var adapter: QuotesAdapter
 
-    private var page: Int = 102
+    private var page: Int = 1
 
     @Inject
     @Named("Logger")
@@ -107,6 +107,9 @@ class SettingsActivity : AppCompatActivity() {
                     // Get quotes
                      CoroutineScope(Dispatchers.Main).launch {
                          viewModel.getQuotes(page)
+
+                         delay(3000)
+
                          viewModel.hideLoading()
                      }
                     viewModel.showLoading()
